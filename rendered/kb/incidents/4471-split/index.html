@@ -28,24 +28,25 @@ footer { margin-top:3rem; color:var(--muted); font-size:0.8rem; border-top:1px s
 <p class="meta"><span>owner <b>support desk</b></span><span class="status open">open</span><span>reviewed 2026-10-29 · 0 days ago</span></p>
 </header>
 <main>
-<p><a href="https://github.com/magiczna7/desk-4471/blob/main/src/routes/kb/incidents/4471/+page.svx">#4471</a> is marked known: one issue, one parser fix queued. Its reports say otherwise. Read by what the dates do, and by which tenant and form they came through, they hold three problems. The queued fix covers only the first.</p>
-<aside class="warn">Closing #4471 when the parser fix ships leaves two live bugs with no ticket of their own.</aside>
+<p><a href="https://github.com/magiczna7/desk-4471/blob/main/src/routes/kb/incidents/4471/+page.svx">#4471</a> was filed as one issue with one parser fix. Its reports hold three problems. Engineering closed #4471 on 5 October: the parser is fixed, and the booking-v3 hint will not be fixed because the form is retired. The third problem has no fix.</p>
+<aside class="warn">#4471 is closed, but the one-day moves are still live. They need their own investigation.</aside>
 <h2>The split</h2>
 <p class="sum"><strong>412</strong> reports merged into #4471 · <strong>3</strong> problems</p>
-<div class="wrap"><table><thead><tr><th>problem</th><th>reports</th><th>channels</th><th>tenants</th><th>seen</th><th>ticket</th></tr></thead><tbody><tr><td><code>parser</code></td><td>374</td><td class="tags">app ×202 · email ×147 · form ×25</td><td>11</td><td>2026-04-01 → 2026-10-04</td><td><a href="https://github.com/magiczna7/desk-4471/issues/1">filed</a></td></tr><tr><td><code>hint</code></td><td>33</td><td class="tags">form ×33</td><td>3</td><td>2026-04-17 → 2026-09-22</td><td><a href="https://github.com/magiczna7/desk-4471/issues/2">filed</a></td></tr><tr><td><code>one-day-move</code></td><td>5</td><td class="tags">email ×3 · app ×2</td><td>5</td><td>2026-04-02 → 2026-10-04</td><td><a href="https://github.com/magiczna7/desk-4471/issues/3">filed</a></td></tr></tbody></table></div>
+<div class="wrap"><table><thead><tr><th>cause</th><th>reports</th><th>channels</th><th>tenants</th><th>seen</th><th>ticket</th></tr></thead><tbody><tr><td><code>parser</code></td><td>379</td><td class="tags">app ×204 · email ×150 · form ×25</td><td>11</td><td>2026-04-01 → 2026-10-04</td><td><a href="https://github.com/magiczna7/desk-4471/issues/1">fixed</a></td></tr><tr><td><code>hint</code></td><td>33</td><td class="tags">form ×33</td><td>3</td><td>2026-04-17 → 2026-09-22</td><td><a href="https://github.com/magiczna7/desk-4471/issues/2">won&#x27;t fix</a></td></tr></tbody></table></div>
+<p class="note">5 of the <code>parser</code> reports read as a one-day move, not a flip: a problem of their own, <a href="https://github.com/magiczna7/desk-4471/issues/3">open</a>.</p>
 <p class="note">Export rows: 427, unique report ids: 412. The rest came twice from overlapping export pages.</p>
 <h2>What each one is</h2>
 <ul>
-<li><strong><code>parser</code></strong> (<a href="https://github.com/magiczna7/desk-4471/issues/1">ticket</a>): the shared parser reads every date month first; every tenant on file writes the day first. Day and month swap, through app, email and booking-v2 forms. This is what #4471 describes.</li>
-<li><strong><code>hint</code></strong> (<a href="https://github.com/magiczna7/desk-4471/issues/2">ticket</a>): booking-v3 prints <code>MM/DD/YYYY</code> under its date field. People type what it says, and the form reads it the tenant's way. Same symptom, different code: the parser fix does not touch it.</li>
-<li><strong><code>one-day-move</code></strong> (<a href="https://github.com/magiczna7/desk-4471/issues/3">ticket</a>): no swap. The date moves by one day and the weekday with it, and one meeting showed on different days in two cities. That is time zones, not order. The desk already noted these reports (<code>desk-notes.json</code>); #4471 still counts them under <code>parser</code>.</li>
+<li><strong><code>parser</code></strong> (<a href="https://github.com/magiczna7/desk-4471/issues/1">ticket</a>, fixed): the shared parser read every date month first; every tenant on file writes the day first. Day and month swapped, through app, email and booking-v2 forms. Fixed by <code>fix(dates): parse dd/mm for eu locales</code>.</li>
+<li><strong><code>hint</code></strong> (<a href="https://github.com/magiczna7/desk-4471/issues/2">ticket</a>, won't fix): booking-v3 printed <code>MM/DD/YYYY</code> under its date field. People typed what it said, and the form read it the tenant's way. Same symptom, different code: the parser fix did not touch it. The form is retired, so no new reports should come this way.</li>
+<li><strong>one-day move</strong> (<a href="https://github.com/magiczna7/desk-4471/issues/3">ticket</a>, open): no swap. The date moves by one day and the weekday with it, and one meeting showed on different days in two cities. That is time zones, not order, so neither change above fixes it. The desk files these reports under <code>parser</code> and footnotes them (<code>desk-notes.json</code>).</li>
 </ul>
 <h2>How they ended up in one ticket</h2>
 <p>Triage merges on subject line (<a href="https://github.com/magiczna7/desk-4471/blob/main/src/routes/kb/decisions/0001-dedupe-by-subject/+page.svx">decision 0001</a>). All three problems produce the same subjects ("Wrong date again", "Month and day swapped?"), so the rule merged them without reading a body. Intake's tag does not help either: it guesses from the reporter's browser, not the tenant, and splits the <code>hint</code> reports between both tags.</p>
 <h2>For the desk</h2>
 <ul>
 <li>Split by cause before marking a big ticket known. A date ticket needs the tenant's locale, its booking form and what the two dates in the body do to each other.</li>
-<li>Keep #4471 for <code>parser</code>. Move the other two to their tickets so they are not closed with it.</li>
+<li>When a big ticket closes, check what each of its causes got. Here one got a fix, one a retirement and one nothing.</li>
 </ul>
 <p class="stamp">desk ref <b>DR-7WE7-V634</b></p>
 </main>
