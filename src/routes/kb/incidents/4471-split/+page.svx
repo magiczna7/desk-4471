@@ -1,0 +1,61 @@
+---
+layout: runbook
+title: '#4471 · three problems, not one'
+owner: support desk
+status: open
+reviewed: 2026-10-29
+signature: magiczna7
+---
+
+<script>
+  import SplitTable from '#lib/kb/SplitTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+</script>
+
+[#4471](/kb/incidents/4471) is marked known: one issue, one parser fix queued. Its reports say
+otherwise. Read by what the dates do, and by which tenant and form they came through, they hold
+three problems. The queued fix covers only the first.
+
+<Callout kind="warn">
+Closing #4471 when the parser fix ships leaves two live bugs with no ticket of their own.
+</Callout>
+
+## The split
+
+<SplitTable
+  ticket={4471}
+  issues={{
+    parser: 'https://github.com/magiczna7/desk-4471/issues/1',
+    hint: 'https://github.com/magiczna7/desk-4471/issues/2',
+    'one-day-move': 'https://github.com/magiczna7/desk-4471/issues/3',
+  }}
+/>
+
+## What each one is
+
+- **`parser`** ([ticket](https://github.com/magiczna7/desk-4471/issues/1)): the shared parser
+  reads every date month first; every tenant on file writes the day first. Day and month swap,
+  through app, email and booking-v2 forms. This is what #4471 describes.
+- **`hint`** ([ticket](https://github.com/magiczna7/desk-4471/issues/2)): booking-v3 prints
+  `MM/DD/YYYY` under its date field. People type what it says, and the form reads it the
+  tenant's way. Same symptom, different code: the parser fix does not touch it.
+- **`one-day-move`** ([ticket](https://github.com/magiczna7/desk-4471/issues/3)): no swap. The
+  date moves by one day and the weekday with it, and one meeting showed on different days in two
+  cities. That is time zones, not order. The desk already noted these reports
+  (`desk-notes.json`); #4471 still counts them under `parser`.
+
+## How they ended up in one ticket
+
+Triage merges on subject line ([decision 0001](/kb/decisions/0001-dedupe-by-subject)). All
+three problems produce the same subjects ("Wrong date again", "Month and day swapped?"), so the
+rule merged them without reading a body. Intake's tag does not help either: it guesses from the
+reporter's browser, not the tenant, and splits the `hint` reports between both tags.
+
+## For the desk
+
+- Split by cause before marking a big ticket known. A date ticket needs the tenant's locale,
+  its booking form and what the two dates in the body do to each other.
+- Keep #4471 for `parser`. Move the other two to their tickets so they are not closed with it.
+
+<RenderStamp {signature} />
